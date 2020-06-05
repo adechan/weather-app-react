@@ -5,18 +5,19 @@ import Location from './Location';
 import Icon from './Icon';
 import Conditions from './Conditions';
 
-const WeatherCard = (props) => {
+// This component is receiving a temp and a condition
+const WeatherCard = ({temp, condition, city, country}) => {
 
     let highColour = 0;
     let lowColour = 0;
-    let bg = null;
+    let backgroundColour = null;
     
-    if (props.temp > 12) // This is for hot weather
+    if (temp > 12) // This is for hot weather
     {
-        highColour = (1 - (props.temp - 12)/ 28) * 255;
+        highColour = (1 - (temp - 12)/ 28) * 255;
         lowColour = highColour - 150;
 
-        bg = `
+        backgroundColour = `
             linear-gradient(
                 to top, 
                 rgb(255, ${highColour}, 0),
@@ -24,12 +25,12 @@ const WeatherCard = (props) => {
             )
         `;
     }
-    else if (props.temp <= 12) // This is for cold weather
+    else if (temp <= 12) // This is for cold weather
     {
-        highColour = (1 - (props.temp + 20)/ 32) * 255;
+        highColour = (1 - (temp + 20)/ 32) * 255;
         lowColour = highColour - 150;
         
-        bg = `
+        backgroundColour = `
             linear-gradient(
                 to top, 
                 rgb(0, ${highColour}, 255),
@@ -40,7 +41,7 @@ const WeatherCard = (props) => {
 
     const Card = styled.div`
         margin: 0 auto;
-        background: ${bg};
+        background: ${backgroundColour};
         width: 200px;
         height: 240px;
         display: flex;
@@ -52,9 +53,9 @@ const WeatherCard = (props) => {
 
     return (  
         <Card>
-            <Location />
-            <Icon />
-            <Conditions />
+            <Location city = {city} country = {country}/>
+            <Icon condition = {condition}/>
+            <Conditions temp = {temp} condition = {condition}/>
 
         </Card>
     );
