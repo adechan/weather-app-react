@@ -7,10 +7,40 @@ import Conditions from './Conditions';
 
 const WeatherCard = (props) => {
 
-    const red = 100;
+    let highColour = 0;
+    let lowColour = 0;
+    let bg = null;
+    
+    if (props.temp > 12) // This is for hot weather
+    {
+        highColour = (1 - (props.temp - 12)/ 28) * 255;
+        lowColour = highColour - 150;
+
+        bg = `
+            linear-gradient(
+                to top, 
+                rgb(255, ${highColour}, 0),
+                rgb(255, ${lowColour}, 0)
+            )
+        `;
+    }
+    else if (props.temp <= 12) // This is for cold weather
+    {
+        highColour = (1 - (props.temp + 20)/ 32) * 255;
+        lowColour = highColour - 150;
+        
+        bg = `
+            linear-gradient(
+                to top, 
+                rgb(0, ${highColour}, 255),
+                rgb(0, ${lowColour}, 255)
+            )
+         `;
+    }
+
     const Card = styled.div`
         margin: 0 auto;
-        background: linear-gradient(to bottom, rgba(${red}, 200, 200), lightblue);
+        background: ${bg};
         width: 200px;
         height: 240px;
         display: flex;
@@ -25,20 +55,6 @@ const WeatherCard = (props) => {
             <Location />
             <Icon />
             <Conditions />
-            
-            {/* OR
-            <div class="location">
-                <h1 className="city"> Sydney </h1> 
-                <h3 className="country"> AU </h3>
-            </div> */}
-            {/* OR
-             <div class="iconBody">
-                <a title = "Icon made by Freepik from www.flaticon.com" href = "https://www.flaticon.com/authors/freepik">
-                    <img className="icon" src = "./img/cloudy.png" alt = "Weather Icon" />
-                </a>
-            </div> */}
-            {/* <h1 className="temp"> 20 °C </h1>
-            <h3 className="condition"> Clouds </h3> */}
 
         </Card>
     );
