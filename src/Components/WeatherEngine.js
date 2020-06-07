@@ -6,6 +6,8 @@ const WeatherEngine = ({location}) => {
 
     // init for our state variables
     const [query, setQuery] = useState("");
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [weather, setWeather] = useState(
       {
         temp: null,
@@ -18,18 +20,29 @@ const WeatherEngine = ({location}) => {
     // defining the data fetching function
     const getWeather = async (query) => 
     {
-      const apiRes = await fetch (
-        `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&APPID=52392332cfb0ced03c5c62e80a8bed23`
-      );
-  
-      const resJSON = await apiRes.json();
-  
-      setWeather({
-        temp: resJSON.main.temp,
-        city: resJSON.name,
-        condition: resJSON.weather[0].main,
-        country: resJSON.sys.country
-      });
+        setQuery("");
+        setLoading(true);
+        try 
+        {
+            const apiRes = await fetch (
+                `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&APPID=52392332cfb0ced03c5c62e80a8bed23`
+          );
+      
+            const resJSON = await apiRes.json();
+        
+            setWeather({
+                temp: resJSON.main.temp,
+                city: resJSON.name,
+                condition: resJSON.weather[0].main,
+                country: resJSON.sys.country
+            });
+
+        } catch (error) 
+        {
+            setError(true);
+        }
+
+        setLoading(false);
     };
   
     // Function to handle search queries from the user side
@@ -47,22 +60,33 @@ const WeatherEngine = ({location}) => {
   
     return (  
         <div>
-        <WeatherCard 
-        temp = {weather.temp} 
-        condition = {weather.condition} 
-        city = {weather.city} 
-        country = {weather.country}/>
+       {
+           // loading false: display WeatherCard
+           !loading && !error ? 
+           (<div> 
+                <WeatherCard 
+                temp = {weather.temp} 
+                condition = {weather.condition} 
+                city = {weather.city} 
+                country = {weather.country}/>
 
-        <form >
-        {/* I want to take whatever input the user gives me
-        and update the stateVariable, city */}
-        {/* When the user clicks on "Search" I want to fetch whatever value
-        that comes back from the API */}
-  
-          <input value = {query} onChange = {e => setQuery(e.target.value)}/>
-          <button onClick = {e => handleSearch(e)}> Search </button>
-  
-        </form>
+                <form >
+        
+                    <input value = {query} onChange = {e => setQuery(e.target.value)}/>
+                    <button onClick = {e => handleSearch(e)}> Search </button>
+        
+                </form>
+           </div>) 
+           : loading ?
+           (<div style = {{ color: "black"}}> Loading </div>)
+           : !loading && error? (
+            <div style = {{ color: "black"}}> 
+               There has been an error <br/>
+               <button onClick = { () => setError(false)}> Reset! </button>
+            </div>)
+            : null
+
+       }
       </div>
     );
 }
